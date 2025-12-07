@@ -1,11 +1,17 @@
-version: '3.8'
-
 services:
   mdriven-server:
-    build: ./server
+    build:
+      context: .
+      dockerfile: MDrivenServer.Dockerfile
     container_name: mdriven-server
     ports:
       - "5010:5010"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5010/"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
     environment:
       - ASPNETCORE_URLS=http://+:5010
       - ASPNETCORE_ENVIRONMENT=Development
@@ -18,22 +24,23 @@ services:
     restart: unless-stopped
 
   mdriven-turnkey:
-    build: ./turnkey
+    build:
+      context: .
+      dockerfile: MDrivenTurnkey.Dockerfile
     container_name: mdriven-turnkey
     ports:
-      - "5050:5050"
+      - "5825:5825"
     environment:
-      # Run HTTP-only
-      - ASPNETCORE_URLS=http://+:5050
+      - ASPNETCORE_URLS=http://+:5825
       - ASPNETCORE_ENVIRONMENT=Development
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-      # 🔑 Point Turnkey at the Server container (NOT itself)
-      - MDrivenServerUrl=http://mdriven-server:5010/__MDrivenServer/
-      - TURNKEY_MDRIVEN_SERVER_URL=http://mdriven-server:5010/__MDrivenServer/
-      
+      - MDrivenServerUrl=http://mdriven-server:5010
+      - TURNKEY_MDRIVEN_SERVER_URL=http://mdriven-server:5010
     depends_on:
-      - mdriven-server
+      mdriven-server:
+        condition: service_healthy
     volumes:
+      - ./turnkey-settings:/app/App_Data
       - ./data/keys/turnkey:/root/.aspnet/DataProtection-Keys
     networks:
       - mdriven-net
