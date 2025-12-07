@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <MDrivenServerOverride 
+      MDrivenServerUSER="admin@admin.com"
+      MDrivenServerPWD="12345678">
+    http://mdriven-server:5010/__MDrivenServer/
+  </MDrivenServerOverride>
+</root>

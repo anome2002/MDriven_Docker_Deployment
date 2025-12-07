@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mdriven-server:
+    build: ./server
+    container_name: mdriven-server
+    ports:
+      - "5010:5010"
+    environment:
+      - ASPNETCORE_URLS=http://+:5010
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+    volumes:
+      - ./data/server:/app/Data
+      - ./data/keys/server:/root/.aspnet/DataProtection-Keys
+    networks:
+      - mdriven-net
+    restart: unless-stopped
+
+  mdriven-turnkey:
+    build: ./turnkey
+    container_name: mdriven-turnkey
+    ports:
+      - "5050:5050"
+    environment:
+      # Run HTTP-only
+      - ASPNETCORE_URLS=http://+:5050
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      # 🔑 Point Turnkey at the Server container (NOT itself)
+      - MDrivenServerUrl=http://mdriven-server:5010/__MDrivenServer/
+      - TURNKEY_MDRIVEN_SERVER_URL=http://mdriven-server:5010/__MDrivenServer/
+      
+    depends_on:
+      - mdriven-server
+    volumes:
+      - ./data/keys/turnkey:/root/.aspnet/DataProtection-Keys
+    networks:
+      - mdriven-net
+    restart: unless-stopped
+
+networks:
+  mdriven-net:
+    driver: bridge
