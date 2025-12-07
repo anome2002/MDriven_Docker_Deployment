@@ -29,9 +29,9 @@ services:
       dockerfile: MDrivenTurnkey.Dockerfile
     container_name: mdriven-turnkey
     ports:
-      - "5825:5825"
+      - "5050:5050"
     environment:
-      - ASPNETCORE_URLS=http://+:5825
+      - ASPNETCORE_URLS=http://+:5050
       - ASPNETCORE_ENVIRONMENT=Development
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
       - MDrivenServerUrl=http://mdriven-server:5010

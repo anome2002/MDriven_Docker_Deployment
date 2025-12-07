@@ -22,4 +22,4 @@ RUN curl -L -o MDrivenTurnkey.zip "https://downloads.mdriven.net/releases/MDrive
     && rm -f MDrivenTurnkey.zip \
     && ls /app/*.dll | head -5
 
-ENTRYPOINT ["dotnet", "StreaminAppCoreWebApp.dll", "--port=5825", "--nohttps"]
+ENTRYPOINT ["dotnet", "StreaminAppCoreWebApp.dll", "--port=5050", "--nohttps"]
